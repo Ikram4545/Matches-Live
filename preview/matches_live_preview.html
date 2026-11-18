@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Matches Live - Full Suite</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #070c16;
+      --card-bg: #111a2d;
+      --card-border: #1c2a44;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-blue: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top App Bar */
+    .app-header {
+      height: 52px;
+      background: #090e18;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 30;
+      flex-shrink: 0;
+    }
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .app-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+    .header-icon {
+      font-size: 17px;
+      color: #cbd5e1;
+      cursor: pointer;
+      position: relative;
+    }
+    .badge-count {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      background: var(--accent-red);
+      color: white;
+      font-size: 9px;
+      font-weight: bold;
+      padding: 2px 5px;
+      border-radius: 10px;
+    }
+
+    /* Marquee Announcement */
+    .announcement-bar {
+      background: #064e3b;
+      color: #6ee7b7;
+      font-size: 11px;
+      padding: 5px 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid #047857;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .marquee-content {
+      display: inline-block;
+      animation: scroll 18s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Live Video Player Section */
+    .player-section {
+      width: 100%;
+      height: 220px;
+      background: #000;
+      position: relative;
+      flex-shrink: 0;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .player-tag {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      z-index: 10;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 50% { opacity: 0.3; } }
+
+    .pip-btn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      color: white;
+      border: 1px solid #334155;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Server Switcher Pills */
+    .server-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #111a2d;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .server-btn {
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 6px 14px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .server-btn.active {
+      background: var(--accent-green);
+      color: #042f2e;
+      font-weight: 800;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Main Scrollable View Area */
+    .main-viewport {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px 110px 12px;
+      scrollbar-width: none;
+    }
+
+    /* Filter Chips */
+    .filter-scroll {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .chip {
+      background: #152033;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid #1e293b;
+    }
+    .chip.active {
+      background: #047857;
+      color: white;
+      font-weight: bold;
+      border-color: var(--accent-green);
+    }
+    .chip-counter {
+      background: var(--accent-red);
+      color: white;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    /* Match Cards */
+    .match-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .match-item:hover, .match-item:active {
+      border-color: var(--accent-green);
+      background: #17243c;
+    }
+    .match-league {
+      font-size: 11px;
+      color: var(--accent-green);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .teams-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .team-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .team-flag {
+      font-size: 20px;
+    }
+    .score-box {
+      text-align: center;
+    }
+    .live-indicator {
+      color: var(--accent-red);
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .match-status-sub {
+      color: var(--text-muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    /* 4-Column Channels Grid (Tab 2) */
+    .channels-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .channel-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .circle-logo {
+      width: 60px;
+      height: 60px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid var(--accent-green);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+    .circle-logo:active { transform: scale(0.92); }
+    .channel-logo-text {
+      color: #0f172a;
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+    }
+    .channel-title {
+      font-size: 11px;
+      color: #cbd5e1;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    /* Categories Tab (Tab 3) - 2x Grid */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 8px 0;
+    }
+    .cat-box {
+      background: #121c30;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-box:active {
+      border-color: var(--accent-green);
+      background: #192742;
+    }
+    .cat-icon-wrap {
+      width: 36px;
+      height: 36px;
+      background: #1e293b;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--accent-green);
+      font-size: 18px;
+    }
+    .cat-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .cat-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Sub-Category Detail View (When Category clicked) */
+    .category-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .back-btn {
+      background: #1e293b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Search Bar in Category / Global */
+    .search-input-box {
+      width: 100%;
+      background: #152033;
+      border: 1px solid var(--border-color);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .search-input-box:focus {
+      border-color: var(--accent-green);
+    }
+
+    /* Sticky Bottom Banner Ad */
+    .ad-container {
+      position: fixed;
+      bottom: 56px;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(90deg, #dc2626, #991b1b);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 25;
+      border-top: 1px solid #ef4444;
+      cursor: pointer;
+    }
+    .ad-cta {
+      background: #facc15;
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #080d16;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 30;
+    }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 11px;
+      cursor: pointer;
+      width: 33%;
+    }
+    .nav-btn.active {
+      color: var(--accent-green);
+      font-weight: 800;
+    }
+    .nav-btn i { font-size: 18px; }
+
+    /* Navigation Drawer (Sidebar) */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+    }
+    .drawer-menu {
+      width: 280px;
+      height: 100%;
+      background: #0c1424;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer-header {
+      padding: 24px 16px;
+      background: #080d16;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .drawer-items {
+      flex: 1;
+      padding: 12px 0;
+    }
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      color: #cbd5e1;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .drawer-item:hover {
+      background: #142034;
+      color: var(--accent-green);
+    }
+
+    /* In-App Update Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 110;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-box {
+      background: #111a2d;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+    .modal-icon {
+      font-size: 40px;
+      color: var(--accent-green);
+      margin-bottom: 12px;
+    }
+    .modal-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+    }
+    .modal-btn.primary {
+      background: var(--accent-green);
+      color: #042f2e;
+    }
+    .modal-btn.secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+    <div class="drawer-menu">
+      <div class="drawer-header">
+        <i class="fa-solid fa-tv" style="font-size: 28px; color: var(--accent-green);"></i>
+        <div>
+          <h3 style="font-size: 16px; font-weight: bold; color: white;">Matches Live</h3>
+          <p style="font-size: 11px; color: var(--text-muted);">v2.0 (Premium Sports)</p>
+        </div>
+      </div>
+      <div class="drawer-items">
+        <div class="drawer-item" onclick="openTelegram()"><i class="fa-brands fa-telegram" style="color: #38bdf8; font-size: 18px;"></i> Join Telegram Backup</div>
+        <div class="drawer-item" onclick="openUpdateModal()"><i class="fa-solid fa-cloud-arrow-down" style="color: #10b981; font-size: 18px;"></i> Check for Updates</div>
+        <div class="drawer-item" onclick="openFavorites()"><i class="fa-solid fa-star" style="color: #facc15; font-size: 18px;"></i> Starred Channels</div>
+        <div class="drawer-item" onclick="shareApp()"><i class="fa-solid fa-share-nodes" style="color: #a855f7; font-size: 18px;"></i> Share App with Friends</div>
+        <div class="drawer-item" onclick="alert('Matches Live v2.0\nHigh-Performance HLS Sports Streaming Player')"><i class="fa-solid fa-circle-info" style="font-size: 18px;"></i> About App</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <i class="fa-solid fa-bars header-icon" onclick="openDrawer()"></i>
+      <span class="app-title" id="screen-title">Matches Live</span>
+    </div>
+    <div class="header-right">
+      <i class="fa-solid fa-magnifying-glass header-icon" onclick="openGlobalSearch()"></i>
+      <i class="fa-solid fa-star header-icon" onclick="openFavorites()"></i>
+      <i class="fa-solid fa-bell header-icon" onclick="openNotifications()">
+        <span class="badge-count">8</span>
+      </i>
+      <i class="fa-solid fa-rotate-right header-icon" onclick="location.reload()"></i>
+    </div>
+  </header>
+
+  <!-- Marquee Announcement -->
+  <div class="announcement-bar">
+    <i class="fa-solid fa-bullhorn"></i>
+    <span class="marquee-content">📢 Welcome to Matches Live! Watch ICC Cricket World Cup in Ultra HD ... Tap HD1 / HD2 if stream gets busy! Join Telegram for backup links!</span>
+  </div>
+
+  <!-- Live Video Player -->
+  <div class="player-section" id="playerSection">
+    <div class="player-tag">
+      <div class="pulse-dot"></div>
+      <span id="player-status">LIVE STREAM</span>
+    </div>
+    <div class="pip-btn" onclick="togglePiP()">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> PiP
+    </div>
+    <video id="live-player" controls autoplay muted playsinline></video>
+  </div>
+
+  <!-- Server Pills -->
+  <div class="server-bar" id="serverBar">
+    <div class="server-btn active" onclick="switchServer(0, this)">HD 1 (Primary)</div>
+    <div class="server-btn" onclick="switchServer(1, this)">HD 2 (Backup)</div>
+    <div class="server-btn" onclick="switchServer(2, this)">PTV Sports</div>
+    <div class="server-btn" onclick="switchServer(3, this)">Ten Sports</div>
+    <div class="server-btn" onclick="switchServer(4, this)">Willow HD</div>
+    <div class="server-btn" onclick="switchServer(5, this)">Low 480p</div>
+  </div>
+
+  <!-- Main Viewport -->
+  <main class="main-viewport">
+
+    <!-- Screen 1: Tab 1 - Live Events -->
+    <section id="view-live-events">
+      <!-- Category Filter Chips -->
+      <div class="filter-scroll">
+        <div class="chip active" onclick="filterEvents('all', this)"><i class="fa-solid fa-list"></i> All <span class="chip-counter">98</span></div>
+        <div class="chip" onclick="filterEvents('cricket', this)"><i class="fa-solid fa-baseball-bat-ball"></i> Cricket <span class="chip-counter">7</span></div>
+        <div class="chip" onclick="filterEvents('football', this)"><i class="fa-solid fa-futbol"></i> Football <span class="chip-counter">82</span></div>
+        <div class="chip" onclick="filterEvents('boxing', this)"><i class="fa-solid fa-hand-fist"></i> Boxing <span class="chip-counter">3</span></div>
+        <div class="chip" onclick="filterEvents('racing', this)"><i class="fa-solid fa-car"></i> Racing <span class="chip-counter">2</span></div>
+        <div class="chip" onclick="filterEvents('tennis', this)"><i class="fa-solid fa-table-tennis-paddle-ball"></i> Tennis <span class="chip-counter">4</span></div>
+      </div>
+
+      <!-- Match Cards -->
+      <div id="matches-list">
+        <!-- Injected dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- Screen 2: Tab 2 - Sports Grid (4-Column) -->
+    <section id="view-sports" style="display: none;">
+      <input type="text" class="search-input-box" placeholder="🔍 Search Sports Channels (PTV, Ten, Willow, Star...)" oninput="searchSportsGrid(this.value)">
+      <div style="color: var(--text-muted); font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;">
+        ⚡ 24/7 Global Sports Channels
+      </div>
+      <div class="channels-container" id="sports-grid-container">
+        <!-- Injected dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- Screen 3: Tab 3 - Categories & OTT Networks -->
+    <section id="view-categories" style="display: none;">
+      <div style="color: var(--text-muted); font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;">
+        📺 OTT Platforms & Regional Networks
+      </div>
+      <div class="categories-grid" id="categories-grid-container">
+        <!-- Injected dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- Screen 4: Category Detail Sub-Screen (e.g. Tata Play / Pakistan / Kids) -->
+    <section id="view-category-detail" style="display: none;">
+      <div class="category-detail-header">
+        <button class="back-btn" onclick="backToCategories()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <h3 id="category-detail-title" style="font-size: 15px; color: white;">Category</h3>
+      </div>
+      <input type="text" class="search-input-box" id="category-search-input" placeholder="🔍 Search in this category..." oninput="filterCategoryChannels(this.value)">
+      <div class="channels-container" id="category-channels-container">
+        <!-- Injected dynamically by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sticky Bottom Banner Ad -->
+  <div class="ad-container" onclick="showAd()">
+    <div>
+      <div style="font-size: 11px; font-weight: 800; color: #fff;">🔥 AD SPONSOR: AliExpress 70% OFF</div>
+      <div style="font-size: 9px; opacity: 0.8; color: #fecaca;">Mega Deals on Smart Tech & Sports Gear</div>
+    </div>
+    <div class="ad-cta">SHOP NOW ></div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-bar">
+    <div class="nav-btn active" id="btn-tab-events" onclick="navigateTab('live-events')">
+      <i class="fa-solid fa-tower-broadcast"></i>
+      <span>Live Events</span>
+    </div>
+    <div class="nav-btn" id="btn-tab-sports" onclick="navigateTab('sports')">
+      <i class="fa-solid fa-baseball-bat-ball"></i>
+      <span>Sports</span>
+    </div>
+    <div class="nav-btn" id="btn-tab-categories" onclick="navigateTab('categories')">
+      <i class="fa-solid fa-tv"></i>
+      <span>Categories</span>
+    </div>
+  </nav>
+
+  <!-- In-App Update Modal -->
+  <div class="modal-backdrop" id="updateModal">
+    <div class="modal-box">
+      <i class="fa-solid fa-circle-arrow-up modal-icon"></i>
+      <h3 style="font-size: 18px; margin-bottom: 6px; color: white;">New Update Available</h3>
+      <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;">
+        Matches Live v2.0 is out! Ultra HD 4K servers, bug fixes & lag-free ICC World Cup streaming.
+      </p>
+      <button class="modal-btn primary" onclick="closeUpdateModal()">UPDATE APP NOW</button>
+      <button class="modal-btn secondary" onclick="closeUpdateModal()">LATER</button>
+    </div>
+  </div>
+
+  <!-- Data & Application Logic -->
+  <script>
+    // 1. Data Store
+    const matchesData = [
+      {
+        id: "m1",
+        category: "cricket",
+        tournament: "ICC ODI WORLD CUP - LIVE NOW",
+        team1: { name: "Pakistan", flag: "🇵🇰" },
+        team2: { name: "India", flag: "🇮🇳" },
+        statusLive: true,
+        score: "264 / 4",
+        over: "● LIVE 42.4 ov",
+        stream: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+      },
+      {
+        id: "m2",
+        category: "cricket",
+        tournament: "TEST INTERNATIONAL",
+        team1: { name: "S. Africa", flag: "🇿🇦" },
+        team2: { name: "Australia", flag: "🇦🇺" },
+        statusLive: false,
+        score: "01:30 PM",
+        over: "Starts in 3 Hours",
+        stream: "https://cdn.pishow.tv/ott/live/1161/master.m3u8"
+      },
+      {
+        id: "m3",
+        category: "cricket",
+        tournament: "ICC WORLD TEST CHAMPIONSHIP",
+        team1: { name: "Bangladesh", flag: "🇧🇩" },
+        team2: { name: "West Indies", flag: "🏝️" },
+        statusLive: false,
+        score: "08:30 AM",
+        over: "Starts Tomorrow",
+        stream: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8"
+      },
+      {
+        id: "m4",
+        category: "cricket",
+        tournament: "ODI TRI-SERIES IN PAKISTAN",
+        team1: { name: "Pakistan", flag: "🇵🇰" },
+        team2: { name: "Sri Lanka", flag: "🇱🇰" },
+        statusLive: false,
+        score: "01:00 PM",
+        over: "Starts in 9 Hours",
+        stream: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+      },
+      {
+        id: "m5",
+        category: "football",
+        tournament: "UEFA CHAMPIONS LEAGUE - LIVE",
+        team1: { name: "Real Madrid", flag: "🇪🇸" },
+        team2: { name: "Man City", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        statusLive: true,
+        score: "2 - 1",
+        over: "● LIVE 78'",
+        stream: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+      },
+      {
+        id: "m6",
+        category: "football",
+        tournament: "ENGLISH PREMIER LEAGUE",
+        team1: { name: "Arsenal", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        team2: { name: "Liverpool", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        statusLive: false,
+        score: "07:30 PM",
+        over: "Tonight",
+        stream: "https://cdn.pishow.tv/ott/live/1161/master.m3u8"
+      }
+    ];
+
+    const sportsChannels = [
+      { name: "PTV Sports", code: "PTV", color: "#047857", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { name: "Ten Sports", code: "TEN", color: "#b91c1c", url: "https://cdn.pishow.tv/ott/live/1161/master.m3u8" },
+      { name: "Willow HD", code: "WILLOW", color: "#d97706", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8" },
+      { name: "Star Sports", code: "STAR", color: "#1d4ed8", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { name: "A Sports HD", code: "A SP", color: "#dc2626", url: "https://cdn.pishow.tv/ott/live/1161/master.m3u8" },
+      { name: "Sky Sports", code: "SKY", color: "#0284c7", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8" },
+      { name: "Fox Cricket", code: "FOX", color: "#334155", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { name: "beIN Sports", code: "beIN", color: "#7c3aed", url: "https://cdn.pishow.tv/ott/live/1161/master.m3u8" },
+      { name: "Sony Ten 1", code: "SONY 1", color: "#2563eb", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { name: "Sony Ten 2", code: "SONY 2", color: "#1d4ed8", url: "https://cdn.pishow.tv/ott/live/1161/master.m3u8" },
+      { name: "Eurosport", code: "EURO", color: "#0369a1", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8" },
+      { name: "T Sports", code: "T SP", color: "#b45309", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { name: "FanCode", code: "FC", color: "#ea580c", url: "https://cdn.pishow.tv/ott/live/1161/master.m3u8" },
+      { name: "Starzplay", code: "STARZ", color: "#000000", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8" },
+      { name: "Formula 1", code: "F1", color: "#e11d48", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+      { name: "WWE Live", code: "WWE", color: "#475569", url: "https://cdn.pishow.tv/ott/live/1161/master.m3u8" }
+    ];
+
+    const categoriesData = [
+      { id: "tataplay", name: "TATA PLAY", desc: "100+ Live Channels", icon: "fa-play" },
+      { id: "hotstar", name: "HOTSTAR", desc: "Live Sports & Shows", icon: "fa-fire" },
+      { id: "sonyliv", name: "SONYLIV", desc: "Sony Sports & Originals", icon: "fa-video" },
+      { id: "jio", name: "JIO IND", desc: "Live Jio TV Feeds", icon: "fa-tower-cell" },
+      { id: "pakistan", name: "PAKISTAN", desc: "PTV, Geo, ARY, Hum, Ten", icon: "fa-flag" },
+      { id: "india", name: "INDIA", desc: "DD, Star, Sony, Zee, Colors", icon: "fa-tv" },
+      { id: "kids", name: "KIDS", desc: "Cartoon Network, Pogo, Nick", icon: "fa-child" },
+      { id: "news", name: "NEWS", desc: "Geo, ARY, BBC, CNN, Aaj Tak", icon: "fa-newspaper" },
+      { id: "discovery", name: "DISCOVERY", desc: "Nat Geo, Animal Planet", icon: "fa-compass" },
+      { id: "music", name: "MUSIC", desc: "MTV, 9XM, Jalwa, 80s", icon: "fa-music" },
+      { id: "sundirect", name: "SUN DIRECT", desc: "South Indian Channels", icon: "fa-sun" },
+      { id: "distrotv", name: "DISTRO TV", desc: "Free Global Streaming", icon: "fa-globe" }
+    ];
+
+    const categoryChannelsDatabase = {
+      tataplay: [
+        { name: "Star Plus", code: "STAR+", color: "#dc2626" },
+        { name: "Sony Entertainment", code: "SET", color: "#2563eb" },
+        { name: "Colors TV", code: "COLORS", color: "#e11d48" },
+        { name: "Zee TV", code: "ZEE", color: "#7c3aed" },
+        { name: "Star Gold", code: "GOLD", color: "#d97706" },
+        { name: "Sony Max", code: "MAX", color: "#0284c7" }
+      ],
+      hotstar: [
+        { name: "Star Sports 1 HD", code: "SS 1", color: "#1d4ed8" },
+        { name: "Star Sports Hindi", code: "SS HIN", color: "#2563eb" },
+        { name: "Star Sports Select 1", code: "SEL 1", color: "#047857" },
+        { name: "Hotstar Specials", code: "HS SPEC", color: "#b91c1c" }
+      ],
+      sonyliv: [
+        { name: "Sony Ten 1 HD", code: "TEN 1", color: "#2563eb" },
+        { name: "Sony Ten 2 HD", code: "TEN 2", color: "#1d4ed8" },
+        { name: "Sony Ten 3 Hindi", code: "TEN 3", color: "#0284c7" },
+        { name: "Sony BBC Earth", code: "EARTH", color: "#047857" }
+      ],
+      jio: [
+        { name: "Jio Cinema 1", code: "JC 1", color: "#db2777" },
+        { name: "Sports18 1 HD", code: "S18", color: "#059669" },
+        { name: "Jio Cricket HD", code: "JIO CRIC", color: "#2563eb" },
+        { name: "Colors Cineplex", code: "CINE", color: "#d97706" }
+      ],
+      pakistan: [
+        { name: "PTV Sports HD", code: "PTV", color: "#047857" },
+        { name: "Ten Sports Pakistan", code: "TEN PK", color: "#b91c1c" },
+        { name: "A Sports HD", code: "A SP", color: "#dc2626" },
+        { name: "Geo Super", code: "SUPER", color: "#2563eb" },
+        { name: "Geo News", code: "GEO", color: "#0284c7" },
+        { name: "ARY News", code: "ARY", color: "#d97706" },
+        { name: "Hum TV", code: "HUM", color: "#e11d48" }
+      ],
+      india: [
+        { name: "DD Sports HD", code: "DD SP", color: "#059669" },
+        { name: "Star Sports 1", code: "STAR 1", color: "#1d4ed8" },
+        { name: "Sony Ten 1", code: "TEN 1", color: "#2563eb" },
+        { name: "Aaj Tak", code: "AAJ TAK", color: "#dc2626" },
+        { name: "Zee News", code: "ZEE", color: "#7c3aed" }
+      ],
+      kids: [
+        { name: "Cartoon Network", code: "CN", color: "#000000" },
+        { name: "Pogo TV", code: "POGO", color: "#0284c7" },
+        { name: "Nickelodeon", code: "NICK", color: "#ea580c" },
+        { name: "Disney Channel", code: "DISNEY", color: "#2563eb" }
+      ],
+      news: [
+        { name: "Geo News", code: "GEO", color: "#0284c7" },
+        { name: "ARY News", code: "ARY", color: "#d97706" },
+        { name: "BBC World", code: "BBC", color: "#b91c1c" },
+        { name: "CNN International", code: "CNN", color: "#dc2626" },
+        { name: "Al Jazeera", code: "AJ", color: "#b45309" }
+      ],
+      discovery: [
+        { name: "Discovery Channel", code: "DISC", color: "#0284c7" },
+        { name: "National Geographic", code: "NAT GEO", color: "#f59e0b" },
+        { name: "Animal Planet", code: "ANIMAL", color: "#059669" },
+        { name: "History TV18", code: "HIST", color: "#dc2626" }
+      ],
+      music: [
+        { name: "MTV HD", code: "MTV", color: "#000000" },
+        { name: "9XM Music", code: "9XM", color: "#e11d48" },
+        { name: "Jalwa TV", code: "JALWA", color: "#7c3aed" },
+        { name: "Sony Mix", code: "MIX", color: "#2563eb" }
+      ],
+      sundirect: [
+        { name: "Sun TV HD", code: "SUN TV", color: "#d97706" },
+        { name: "KTV Movies", code: "KTV", color: "#b91c1c" },
+        { name: "Gemini TV", code: "GEMINI", color: "#0284c7" },
+        { name: "Surya TV", code: "SURYA", color: "#dc2626" }
+      ],
+      distrotv: [
+        { name: "Distro Sports", code: "D-SPORT", color: "#059669" },
+        { name: "Fight TV", code: "FIGHT", color: "#b91c1c" },
+        { name: "Motorsport TV", code: "MOTOR", color: "#2563eb" }
+      ]
+    };
+
+    // 2. Video Player & Auto-Failover Engine
+    const video = document.getElementById('live-player');
+    let hls = null;
+    let currentServerList = [
+      "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
+      "https://cdn.pishow.tv/ott/live/1161/master.m3u8"
+    ];
+    let currentServerIndex = 0;
+
+    function playStream(url) {
+      if (Hls.isSupported()) {
+        if (hls) hls.destroy();
+        hls = new Hls({ 
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 90
+        });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+          video.play().catch(e => console.log('Autoplay handled:', e));
+        });
+
+        // AUTO-FAILOVER: If stream drops or network fails, automatically switch to backup mirror!
+        hls.on(Hls.Events.ERROR, function(event, data) {
+          if (data.fatal) {
+            console.warn('[Auto-Failover Triggered] Stream error detected:', data.type);
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                console.log('Network error. Trying next backup server...');
+                autoFailoverNextServer();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                console.log('Media error. Recovering media...');
+                hls.recoverMediaError();
+                break;
+              default:
+                autoFailoverNextServer();
+                break;
+            }
+          }
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
+        video.addEventListener('loadedmetadata', function() { video.play(); });
+      }
+    }
+
+    function autoFailoverNextServer() {
+      currentServerIndex = (currentServerIndex + 1) % currentServerList.length;
+      const nextUrl = currentServerList[currentServerIndex];
+      document.getElementById('player-status').innerText = `AUTO-SWITCH: HD ${currentServerIndex + 1}`;
+      console.log('Auto-switched to backup stream:', nextUrl);
+      playStream(nextUrl);
+    }
+
+    // Initialize default stream
+    playStream(currentServerList[0]);
+
+    // Live Backend Synchronization (Polls every 30s)
+    async function syncFromBackend() {
+      try {
+        const res = await fetch('http://localhost:5000/api/matches');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.matches && data.matches.length > 0) {
+            console.log('[Backend Sync] Received real-time live matches:', data.matches.length);
+            // Update announcement
+            if (data.announcement) {
+              document.querySelector('.marquee-content').innerText = data.announcement;
+            }
+          }
+        }
+      } catch (err) {
+        console.log('[Backend Sync] Running offline-first fallback:', err.message);
+      }
+    }
+    syncFromBackend();
+    setInterval(syncFromBackend, 30000);
+
+    function switchServer(idx, elem) {
+      document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+      elem.classList.add('active');
+      document.getElementById('player-status').innerText = 'SWITCHING...';
+      playStream(defaultStream);
+      setTimeout(() => {
+        document.getElementById('player-status').innerText = 'LIVE: ' + elem.innerText;
+      }, 800);
+    }
+
+    function loadMatchStream(title, url) {
+      document.getElementById('player-status').innerText = 'LOADING: ' + title;
+      playStream(url);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function togglePiP() {
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+      } else if (video.requestPictureInPicture) {
+        video.requestPictureInPicture().catch(e => alert('PiP mode enabled in phone settings'));
+      } else {
+        alert('Picture-in-Picture mode ready for mobile');
+      }
+    }
+
+    // 3. Render Match Cards
+    function renderMatches(filter = 'all') {
+      const container = document.getElementById('matches-list');
+      container.innerHTML = '';
+      const list = (filter === 'all') ? matchesData : matchesData.filter(m => m.category === filter);
+
+      list.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'match-item';
+        card.onclick = () => loadMatchStream(m.team1.name + ' vs ' + m.team2.name, m.stream);
+        card.innerHTML = `
+          <div class="match-league"><i class="fa-solid fa-trophy"></i> ${m.tournament}</div>
+          <div class="teams-container">
+            <div class="team-box"><span class="team-flag">${m.team1.flag}</span> <span>${m.team1.name}</span></div>
+            <div class="score-box">
+              <div class="${m.statusLive ? 'live-indicator' : ''}" style="${!m.statusLive ? 'color: #38bdf8; font-weight: bold;' : ''}">${m.over}</div>
+              <div class="match-status-sub">${m.score}</div>
+            </div>
+            <div class="team-box"><span>${m.team2.name}</span> <span class="team-flag">${m.team2.flag}</span></div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterEvents(cat, elem) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      elem.classList.add('active');
+      renderMatches(cat);
+    }
+
+    // 4. Render Sports Channels Grid (Tab 2)
+    function renderSportsGrid(items = sportsChannels) {
+      const container = document.getElementById('sports-grid-container');
+      container.innerHTML = '';
+      items.forEach(ch => {
+        const div = document.createElement('div');
+        div.className = 'channel-card';
+        div.onclick = () => loadMatchStream(ch.name, ch.url);
+        div.innerHTML = `
+          <div class="circle-logo"><span class="channel-logo-text" style="color: ${ch.color};">${ch.code}</span></div>
+          <span class="channel-title">${ch.name}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function searchSportsGrid(query) {
+      const filtered = sportsChannels.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+      renderSportsGrid(filtered);
+    }
+
+    // 5. Render Categories Hub (Tab 3)
+    function renderCategories() {
+      const container = document.getElementById('categories-grid-container');
+      container.innerHTML = '';
+      categoriesData.forEach(cat => {
+        const box = document.createElement('div');
+        box.className = 'cat-box';
+        box.onclick = () => openCategoryDetail(cat.id, cat.name);
+        box.innerHTML = `
+          <div class="cat-icon-wrap"><i class="fa-solid ${cat.icon}"></i></div>
+          <div>
+            <div class="cat-name">${cat.name}</div>
+            <div class="cat-desc">${cat.desc}</div>
+          </div>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    let activeCatId = '';
+    function openCategoryDetail(catId, catName) {
+      activeCatId = catId;
+      document.getElementById('view-live-events').style.display = 'none';
+      document.getElementById('view-sports').style.display = 'none';
+      document.getElementById('view-categories').style.display = 'none';
+      document.getElementById('view-category-detail').style.display = 'block';
+      document.getElementById('category-detail-title').innerText = catName + ' Network';
+      
+      const channels = categoryChannelsDatabase[catId] || [];
+      renderCategoryChannels(channels);
+    }
+
+    function renderCategoryChannels(channels) {
+      const container = document.getElementById('category-channels-container');
+      container.innerHTML = '';
+      if (channels.length === 0) {
+        container.innerHTML = '<div style="color: #94a3b8; grid-column: span 4; text-align: center; padding: 20px;">No channels found</div>';
+        return;
+      }
+      channels.forEach(ch => {
+        const div = document.createElement('div');
+        div.className = 'channel-card';
+        div.onclick = () => loadMatchStream(ch.name, defaultStream);
+        div.innerHTML = `
+          <div class="circle-logo"><span class="channel-logo-text" style="color: ${ch.color};">${ch.code}</span></div>
+          <span class="channel-title">${ch.name}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function filterCategoryChannels(query) {
+      const list = categoryChannelsDatabase[activeCatId] || [];
+      const filtered = list.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+      renderCategoryChannels(filtered);
+    }
+
+    function backToCategories() {
+      document.getElementById('view-category-detail').style.display = 'none';
+      document.getElementById('view-categories').style.display = 'block';
+    }
+
+    // 6. Navigation Tabs Routing
+    function navigateTab(tab) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('view-live-events').style.display = 'none';
+      document.getElementById('view-sports').style.display = 'none';
+      document.getElementById('view-categories').style.display = 'none';
+      document.getElementById('view-category-detail').style.display = 'none';
+
+      if (tab === 'live-events') {
+        document.getElementById('btn-tab-events').classList.add('active');
+        document.getElementById('view-live-events').style.display = 'block';
+        document.getElementById('screen-title').innerText = 'Matches Live';
+      } else if (tab === 'sports') {
+        document.getElementById('btn-tab-sports').classList.add('active');
+        document.getElementById('view-sports').style.display = 'block';
+        document.getElementById('screen-title').innerText = 'Sports Channels';
+      } else if (tab === 'categories') {
+        document.getElementById('btn-tab-categories').classList.add('active');
+        document.getElementById('view-categories').style.display = 'block';
+        document.getElementById('screen-title').innerText = 'Categories & OTT';
+      }
+    }
+
+    // 7. Modals, Drawer & Actions
+    function openDrawer() { document.getElementById('drawerOverlay').style.display = 'block'; }
+    function closeDrawer(e) { if (e.target.id === 'drawerOverlay') document.getElementById('drawerOverlay').style.display = 'none'; }
+    function openUpdateModal() { document.getElementById('drawerOverlay').style.display = 'none'; document.getElementById('updateModal').style.display = 'flex'; }
+    function closeUpdateModal() { document.getElementById('updateModal').style.display = 'none'; }
+    function openTelegram() { alert('Opening Telegram backup channel...'); }
+    function openFavorites() { alert('Starred Channels: PTV Sports, Ten Sports, Willow HD'); }
+    function openNotifications() { alert('Notifications:\n1. Pakistan vs India live now!\n2. ICC World Cup 4K stream updated.'); }
+    function openGlobalSearch() {
+      const q = prompt('Search any channel or match:');
+      if (q) searchSportsGrid(q);
+    }
+    function shareApp() { alert('Share link copied to clipboard!'); }
+    function showAd() { alert('AliExpress Ad clicked! In production, this opens advertiser sponsor link.'); }
+
+    // Init App
+    renderMatches();
+    renderSportsGrid();
+    renderCategories();
+
+    // URL Query Routing for direct screen access
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    const catParam = urlParams.get('cat');
+    const drawerParam = urlParams.get('drawer');
+
+    if (tabParam) {
+      navigateTab(tabParam);
+    }
+    if (catParam) {
+      openCategoryDetail(catParam, catParam.toUpperCase());
+    }
+    if (drawerParam === 'open') {
+      openDrawer();
+    }
+  </script>
+</body>
+</html>
