@@ -1,219 +1,145 @@
 {
-  "version": "2.1",
-  "announcement": "📢 Matches Live Auto-Failover Active! Multi-server redundancy ensures uninterrupted HD streaming.",
+  "version": "2.2.0",
+  "minSupportedVersion": "2.2.0",
+  "updateUrl": "https://github.com/Ikram4545/Matches-Live",
+  "announcement": "Matches Live v2.2 — Connected to live backend with same-match failover & real-time health validation.",
+  "categories": [
+    { "id": "sports", "name": "SPORTS", "desc": "24/7 Live Sports Feeds", "icon": "fa-baseball-bat-ball" },
+    { "id": "pakistan", "name": "PAKISTAN", "desc": "Authorized Pakistan Channels", "icon": "fa-flag" },
+    { "id": "india", "name": "INDIA", "desc": "Authorized India Channels", "icon": "fa-tv" },
+    { "id": "international", "name": "INTERNATIONAL", "desc": "Global Sports & FTA Feeds", "icon": "fa-globe" },
+    { "id": "news", "name": "NEWS", "desc": "Public News Broadcasts", "icon": "fa-newspaper" },
+    { "id": "entertainment", "name": "ENTERTAINMENT", "desc": "Authorized OTT & Shows", "icon": "fa-play" }
+  ],
   "matches": [
     {
-      "id": "m_wc_01",
-      "tournament": "ICC ODI WORLD CUP - LIVE NOW",
+      "id": "m_sample_cricket_01",
+      "externalScoreId": null,
+      "tournament": "CRICKET — STAGING VERIFICATION FEED",
       "category": "cricket",
-      "team1": {
-        "name": "Pakistan",
-        "flag": "🇵🇰"
-      },
-      "team2": {
-        "name": "India",
-        "flag": "🇮🇳"
-      },
+      "team1": { "name": "Team A (Staging)", "flag": "🏏" },
+      "team2": { "name": "Team B (Staging)", "flag": "🏏" },
       "status": "LIVE",
-      "score": "264 / 4",
-      "overs": "● LIVE 42.4 ov",
+      "score": "Score feed pending provider",
+      "overs": "STAGING FEED",
+      "isDemoFeed": true,
       "servers": [
         {
-          "name": "HD 1 (Primary Mux)",
+          "name": "HD 1 (Primary HLS)",
           "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-          "status": "ONLINE"
+          "status": "UNKNOWN",
+          "lastChecked": null
         },
         {
-          "name": "HD 2 (Akamai Live)",
+          "name": "HD 2 (Backup HLS)",
           "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
-          "status": "ONLINE"
-        },
-        {
-          "name": "HD 3 (PiShow Relay)",
-          "url": "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
-          "status": "ONLINE"
-        },
-        {
-          "name": "HD 4 (Backup 720p)",
-          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-          "status": "ONLINE"
+          "status": "UNKNOWN",
+          "lastChecked": null
         }
       ]
     },
     {
-      "id": "m_test_02",
-      "tournament": "TEST INTERNATIONAL",
-      "category": "cricket",
-      "team1": {
-        "name": "South Africa",
-        "flag": "🇿🇦"
-      },
-      "team2": {
-        "name": "Australia",
-        "flag": "🇦🇺"
-      },
-      "status": "UPCOMING",
-      "score": "01:30 PM",
-      "overs": "Starts in 3 Hours",
-      "servers": [
-        {
-          "name": "HD 1",
-          "url": "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
-          "status": "ONLINE"
-        },
-        {
-          "name": "HD 2",
-          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-          "status": "ONLINE"
-        }
-      ]
-    },
-    {
-      "id": "m_wtc_03",
-      "tournament": "ICC WORLD TEST CHAMPIONSHIP",
-      "category": "cricket",
-      "team1": {
-        "name": "Bangladesh",
-        "flag": "🇧🇩"
-      },
-      "team2": {
-        "name": "West Indies",
-        "flag": "🏝️"
-      },
-      "status": "UPCOMING",
-      "score": "08:30 AM",
-      "overs": "Starts Tomorrow",
-      "servers": [
-        {
-          "name": "HD 1",
-          "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
-          "status": "ONLINE"
-        },
-        {
-          "name": "HD 2",
-          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-          "status": "ONLINE"
-        }
-      ]
-    },
-    {
-      "id": "m_ucl_04",
-      "tournament": "UEFA CHAMPIONS LEAGUE",
+      "id": "m_sample_football_02",
+      "externalScoreId": null,
+      "tournament": "FOOTBALL — STAGING VERIFICATION FEED",
       "category": "football",
-      "team1": {
-        "name": "Real Madrid",
-        "flag": "🇪🇸"
-      },
-      "team2": {
-        "name": "Man City",
-        "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
-      },
-      "status": "LIVE",
-      "score": "2 - 1",
-      "overs": "● LIVE 78'",
+      "team1": { "name": "Club A (Staging)", "flag": "⚽" },
+      "team2": { "name": "Club B (Staging)", "flag": "⚽" },
+      "status": "UPCOMING",
+      "score": "Schedule pending provider",
+      "overs": "UPCOMING",
+      "isDemoFeed": true,
       "servers": [
         {
-          "name": "HD 1 (Global Live)",
+          "name": "HD 1 (Red Bull Live)",
           "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
-          "status": "ONLINE"
+          "status": "UNKNOWN",
+          "lastChecked": null
         },
         {
-          "name": "HD 2 (Backup)",
+          "name": "HD 2 (Backup HLS)",
           "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-          "status": "ONLINE"
+          "status": "UNKNOWN",
+          "lastChecked": null
         }
       ]
     }
   ],
   "channels": [
     {
-      "id": "c_ptv",
-      "name": "PTV Sports HD",
-      "category": "pakistan",
-      "code": "PTV",
-      "color": "#047857",
-      "servers": [
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-        "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
-        "http://103.250.28.74:8000/play/a019/index.m3u8"
-      ]
-    },
-    {
-      "id": "c_ten",
-      "name": "Ten Sports Pakistan",
-      "category": "pakistan",
-      "code": "TEN",
-      "color": "#b91c1c",
-      "servers": [
-        "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-        "http://121.91.61.106:8000/play/a04h/index.m3u8"
-      ]
-    },
-    {
-      "id": "c_willow",
-      "name": "Willow Cricket HD",
+      "id": "c_redbull_tv",
+      "name": "Red Bull TV (Live FTA)",
       "category": "sports",
-      "code": "WILLOW",
-      "color": "#d97706",
-      "servers": [
-        "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-      ]
-    },
-    {
-      "id": "c_star",
-      "name": "Star Sports 1 HD",
-      "category": "india",
-      "code": "STAR 1",
-      "color": "#1d4ed8",
-      "servers": [
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-        "https://cdn.pishow.tv/ott/live/1161/master.m3u8"
-      ]
-    },
-    {
-      "id": "c_asports",
-      "name": "A Sports HD",
-      "category": "pakistan",
-      "code": "A SP",
+      "code": "RB TV",
       "color": "#dc2626",
+      "isDemoFeed": false,
       "servers": [
-        "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        {
+          "name": "HD 1 (Official Live)",
+          "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
+          "status": "UNKNOWN",
+          "lastChecked": null
+        },
+        {
+          "name": "HD 2 (Backup Test)",
+          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+          "status": "UNKNOWN",
+          "lastChecked": null
+        }
       ]
     },
     {
-      "id": "c_sky",
-      "name": "Sky Sports Cricket",
-      "category": "sports",
-      "code": "SKY",
+      "id": "c_dd_sports",
+      "name": "DD Sports (Public FTA)",
+      "category": "india",
+      "code": "DD SP",
+      "color": "#059669",
+      "isDemoFeed": false,
+      "servers": [
+        {
+          "name": "HD 1 (PiShow FTA)",
+          "url": "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
+          "status": "UNKNOWN",
+          "lastChecked": null
+        },
+        {
+          "name": "HD 2 (Backup HLS)",
+          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+          "status": "UNKNOWN",
+          "lastChecked": null
+        }
+      ]
+    },
+    {
+      "id": "c_pk_slot_1",
+      "name": "Pakistan Sports Slot 1",
+      "category": "pakistan",
+      "code": "PK 1",
+      "color": "#047857",
+      "isDemoFeed": true,
+      "servers": [
+        {
+          "name": "HD 1 (Awaiting Authorized Feed)",
+          "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+          "status": "UNKNOWN",
+          "lastChecked": null
+        }
+      ]
+    },
+    {
+      "id": "c_intl_slot_1",
+      "name": "Global Sports Feed",
+      "category": "international",
+      "code": "INTL",
       "color": "#0284c7",
+      "isDemoFeed": false,
       "servers": [
-        "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-      ]
-    },
-    {
-      "id": "c_fox",
-      "name": "Fox Cricket",
-      "category": "sports",
-      "code": "FOX",
-      "color": "#334155",
-      "servers": [
-        "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-        "https://cdn.pishow.tv/ott/live/1161/master.m3u8"
-      ]
-    },
-    {
-      "id": "c_bein",
-      "name": "beIN Sports HD",
-      "category": "sports",
-      "code": "beIN",
-      "color": "#7c3aed",
-      "servers": [
-        "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
-        "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8"
+        {
+          "name": "HD 1 (Red Bull Live)",
+          "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
+          "status": "UNKNOWN",
+          "lastChecked": null
+        }
       ]
     }
   ]
